@@ -1,0 +1,31 @@
+services:
+  emailbot:
+    build: 
+      context: ./AutomationReplyingMail
+      dockerfile: Dockerfile
+    command: ["python", "-u", "automation_receive.py"]
+    depends_on:
+      ollama:
+        condition: service_healthy
+    env_file:
+      - .env
+
+  ollama:
+    build:
+      context: ./ollama
+      dockerfile: Dockerfile
+    ports:
+      - "11435:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s --head http://localhost:11434 | grep -q '^HTTP/'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  ollama-data:
