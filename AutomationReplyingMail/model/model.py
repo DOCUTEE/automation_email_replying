@@ -10,14 +10,16 @@ def replying_input(preprompt, prompt):
         "prompt" : f"{preprompt}\n{prompt}",
         "stream": False
     }
-
     try:
         response = requests.post(OLLAMA_URL, json=payload)
+        response.raise_for_status()
+        data = response.json()
+        return data.get("response", "").strip()
     except requests.exceptions.RequestException as e:
-        print(f"Error connecting to OLLAMA server: {e}")
-        return None
-    response = response.json()
-    return response.get("response").strip()
+        print(f"HTTP error: {e}")
+    except (ValueError, KeyError) as e:
+        print(f"Response parse error: {e}")
+    return None
 
 if __name__ == "__main__":
     preprompt = "Only reply in Vietnamese."
