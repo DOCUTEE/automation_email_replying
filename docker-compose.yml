@@ -9,11 +9,14 @@ services:
         condition: service_healthy
     env_file:
       - .env
+    networks:
+      - model-network
 
   ollama:
     build:
       context: ./ollama
       dockerfile: Dockerfile
+    hostname: ollama-model
     ports:
       - "11435:11434"
     volumes:
@@ -26,6 +29,11 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
-
+    networks:
+      - model-network
 volumes:
   ollama-data:
+
+networks:
+  model-network:
+    driver: bridge
