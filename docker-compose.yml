@@ -23,6 +23,7 @@ services:
       - ollama-data:/root/.ollama
     env_file:
       - .env
+    entrypoint: ["/start.sh"]
     healthcheck:
       test: ["CMD-SHELL", "curl -s --head http://localhost:11434 | grep -q '^HTTP/'"]
       interval: 10s
